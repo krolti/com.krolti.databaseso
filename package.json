@@ -1,0 +1,16 @@
+{
+  "name": "com.krolti.database-so",
+  "version": "1.0.0",
+  "displayName": "Database SO",
+  "description": "A High-Performance ScriptableObject Database System for Unity",
+  "unity": "2022.3",
+  "changelogUrl": "https://github.com/krolti/krolti-database-so/blob/main/Assets/Plugins/krolti-database-so/CHANGELOG.md",
+  "licensesUrl": "https://github.com/krolti/krolti-database-so/blob/main/LICENSE",
+  "dependencies": {
+ },
+  "author": {
+    "name": "Krolti",
+    "url": "https://krolti.itch.io/"
+  }
+}
+

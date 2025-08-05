@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b493905ef3c19fb4d988ea87041532fb, type: 3}
+  m_Name: SimpleDatabase
+  m_EditorClassIdentifier: 
+  comment: This is a simple comment. You can use it to explain database's purpose
+    or come up with your own comment idea.
+  Data:
+  - id: 0
+    Tag: 
+  - id: 1
+    Tag: 
+  - id: 2
+    Tag: 
+  - id: 3
+    Tag: 
+  - id: 4
+    Tag: 
+  - id: 5
+    Tag: 
+  - id: 6
+    Tag: 
+  - id: 7
+    Tag: 
+  - id: 8
+    Tag: 
+  - id: 9
+    Tag: 
+  - id: 10
+    Tag: 
+  - id: 11
+    Tag: 
+  - id: 12
+    Tag: 
+  - id: 13
+    Tag: 
+  - id: 14
+    Tag: 
+  - id: 15
+    Tag: 
+  - id: 16
+    Tag: 
+  - id: 17
+    Tag: 
+  - id: 18
+    Tag: 
+  - id: 19
+    Tag: 
+  - id: 20
+    Tag: 
+  - id: 21
+    Tag: 
+  - id: 22
+    Tag: 
+  - id: 23
+    Tag: 
+  - id: 24
+    Tag: 
+  - id: 25
+    Tag: 
+  - id: 26
+    Tag: 
+  - id: 27
+    Tag: 
+  - id: 28
+    Tag: 
+  - id: 29
+    Tag: 
+  - id: 30
+    Tag: 
+  - id: 31
+    Tag: 
+  - id: 32
+    Tag: 
+  - id: 33
+    Tag: 
+  - id: 34
+    Tag: 
+  - id: 35
+    Tag: 
+  - id: 36
+    Tag: 
+  - id: 37
+    Tag: 
+  - id: 38
+    Tag: 
+  - id: 39
+    Tag: 
+  - id: 40
+    Tag: 
+  - id: 41
+    Tag: 
+  - id: 42
+    Tag: 
+  - id: 43
+    Tag: 
+  - id: 44
+    Tag: 
+  - id: 45
+    Tag: 
+  - id: 46
+    Tag: 
+  - id: 47
+    Tag: 
+  - id: 48
+    Tag: 
+  - id: 49
+    Tag: 

@@ -1,0 +1,476 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Linq;
+using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+#if UNIRX
+
+using UniRx;
+
+#endif
+
+
+#if UNITASK
+
+using Cysharp.Threading.Tasks;
+
+#endif
+
+
+#if UNITY_EDITOR
+
+using UnityEditor;
+
+#endif
+
+namespace Krolti.DatabaseSO
+{
+    /// <summary>
+    /// Base class for the Database.
+    /// </summary>
+    /// <typeparam name="T">Type of database items, must implement IDatabaseItem interface.</typeparam>
+    public abstract class Database<T> : ScriptableObject, IDatabase<T>
+
+        where T : class, IDatabaseItem
+    {
+        [SerializeField, TextArea(3, 10)] protected string comment;
+        [Tooltip("The underlying list that stores all database items")]
+        [SerializeField] protected List<T> Data = new List<T>();
+
+        public bool IsInit { get; private set; } = false;
+        public int Count => Data.Count;
+
+
+        public IReadOnlyList<T> GetAll() => new ReadOnlyCollection<T>(Data);
+
+        public DatabaseQuery<T> Query() => new DatabaseQuery<T>(this);
+
+
+
+#if UNIRX
+
+        private Subject<Unit> _onInitialized = new Subject<Unit>();
+        private Subject<Unit> _onDirty = new Subject<Unit>();
+
+
+        /// <summary>
+        /// Observable that triggers when the database finishes initialization.
+        /// </summary>
+        public IObservable<Unit> OnInitialized => _onInitialized;
+
+
+        /// <summary>
+        /// Observable that triggers when the database is marked as dirty.
+        /// </summary>
+        public IObservable<Unit> OnDirty => _onDirty;
+#endif
+
+
+
+
+        protected virtual void OnEnable()
+        {
+            AttributeUtility.CheckDatabaseTypes<T>();
+        }
+
+
+        protected internal virtual void Initialize()
+        {
+            if (IsInit) return;
+
+            if (!IsSortedByID())
+            {
+                Data.Sort();
+            }
+            HashSet<int> uniqueIDs = new();
+
+            foreach (var data in Data)
+            {
+                if (!uniqueIDs.Add(data.ID))
+                {
+                    UnityEngine.Debug.LogErrorFormat("[{0}] Non unique element found " +
+                        "in database. Type: {1}, ID: {2}",
+                        nameof(Database<T>),
+                        typeof(T),
+                        data.ID
+                        );
+                }
+                if (!data.IsValid)
+                {
+                    UnityEngine.Debug.LogWarningFormat("[{0}] Invalid element found " +
+                        "in database. Type: {1}, ID: {2}.",
+                        nameof(Database<T>),
+                        typeof(T),
+                        data.ID
+                        );
+
+                    if (data is IFixable fixable)
+                    {
+                        if (fixable.TryFix())
+                        {
+                            UnityEngine.Debug.LogFormat("[{0}] Fixed element " +
+                                "in database. Type: {1}, ID: {2}.",
+                                nameof(Database<T>),
+                                typeof(T),
+                                data.ID
+                            );
+
+                        }
+                        else
+                        {
+                            UnityEngine.Debug.LogWarningFormat("[{0}] Database element corrupted " +
+                                "in database! Type: {1}, ID: {2}.",
+                                nameof(Database<T>),
+                                typeof(T),
+                                data.ID
+                            );
+                        }
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogWarningFormat("[{0}] Database element is not {1} " +
+                                "in database. Use it to fix corrupted database items. Type: {2}, ID: {3}.",
+                                nameof(Database<T>),
+                                typeof(IFixable),
+                                typeof(T),
+                                data.ID
+                        );
+                    }
+                }
+            }
+
+            IsInit = true;
+
+#if UNIRX
+            _onInitialized.OnNext(Unit.Default);
+#endif
+        }
+
+
+        protected virtual void OnDisable()
+        {
+#if UNIRX
+
+            _onInitialized?.OnCompleted();
+            _onInitialized?.Dispose();
+            _onInitialized = null;
+
+            _onDirty?.OnCompleted();
+            _onDirty?.Dispose();
+            _onDirty = null;
+
+#endif
+        }
+
+
+
+
+        /// <summary>
+        /// Force Database to reinitialize.
+        /// </summary>
+        public virtual void SetDatabaseDirty()
+        {
+            IsInit = false;
+
+#if UNIRX
+            _onDirty.OnNext(Unit.Default);
+#endif
+        }
+
+
+
+        /// <summary>
+        /// Get random item in the database.
+        /// </summary>
+        /// <returns></returns>
+        public T GetRandomItem()
+        {
+            if (Data.Count == 0) return default;
+            return Data[UnityEngine.Random.Range(0, Data.Count)];
+        }
+
+
+
+        /// <summary>
+        /// Quick and memory efficient searching method.
+        /// 
+        /// <para>Time complexity: O(logN), may be worse if database is not initialized.</para>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="warningIfNotFound">Create unity log warning if element was not found.
+        /// <para>WARNING! Use only if param cannot be null for the gameplay and operations count is less than 1000
+        /// per nullable item.</para></param>
+        /// <returns>Database T type.</returns>
+        /// <exception cref="IndexOutOfRangeException">throws if index is less than 0.</exception>
+        public T Search(int id, bool warningIfNotFound = true)
+        {
+            if (id < 0)
+            {
+                throw new IndexOutOfRangeException(nameof(id));
+            }
+
+
+            if (!IsInit) Initialize();
+
+            T item = BinarySearch(id);
+
+            if (item != null)
+            {
+                return item;
+            }
+
+            if (warningIfNotFound)
+            {
+                UnityEngine.Debug.LogWarningFormat("[{0}] Element was not found, target: Type: {1} ID: {2}",
+                    nameof(Database<T>),
+                    typeof(T),
+                    id
+                    );
+            }
+            return null;
+        }
+
+
+
+        /// <summary>
+        /// Safe way to search the item.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
+        /// <returns>If found</returns>
+        public bool TrySearch(int id, out T value)
+        {
+            value = null;
+
+            if (id < 0
+                || Data == null
+                || Count == 0)
+            {
+                return false;
+            }
+
+
+            if (!IsInit) Initialize();
+
+            T item = BinarySearch(id);
+
+            if (item != null)
+            {
+                value = item;
+                return true;
+            }
+
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Efficient contains method that uses binary search to check for containing item.
+        /// 
+        /// <para>Time complexity: O(logN), may be worse if database is not initialized.</para>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool ContainsID(int id)
+        {
+            if (!IsInit) Initialize();
+            return BinarySearch(id) != null;
+        }
+
+
+
+        private T BinarySearch(int id)
+        {
+            int left = 0;
+            int right = Data.Count - 1;
+
+            while (left <= right)
+            {
+                int mid = left + (right - left) / 2;
+                var midID = Data[mid].ID;
+
+                if (midID == id)
+                {
+                    return Data[mid];
+                }
+                else if (midID < id)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+
+            return null;
+        }
+
+
+
+        private bool IsSortedByID()
+        {
+            for (int i = 0; i < Data.Count - 1; i++)
+            {
+                if (Data[i].ID > Data[i + 1].ID)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+
+        public async Task<string> ConvertToJsonAsync(bool prettyPrint = false, CancellationToken cancellationToken = default)
+        {
+            List<T> dataCopy;
+
+            lock (Data)
+            {
+                dataCopy = new List<T>(Data);
+            }
+
+            if (dataCopy.Count == 0)
+            {
+                UnityEngine.Debug.LogWarningFormat("[{0} - async Task] Data count is 0 may not properly convert to json. " +
+                    "Type: {1}",
+                    nameof(Database<T>),
+                    typeof(T)
+                    );
+            }
+
+
+            return await Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var wrapper = new DatabaseWrapper<T>(dataCopy);
+                return JsonUtility.ToJson(wrapper, prettyPrint);
+            }, cancellationToken);
+        }
+
+
+
+        public string ConvertToJson(bool prettyPrint = false)
+        {
+            return JsonConverter.ConvertToJson(Data, prettyPrint);
+        }
+
+
+
+        public void ImportFromJSON(string json)
+        {
+            JsonConverter.ImportFromJSON(json, ref Data);
+            SetDatabaseDirty();
+        }
+
+
+
+
+
+#if UNITASK
+
+
+        public async UniTask<string> ConvertToJsonUniTaskAsync(bool prettyPrint = false, CancellationToken cancellationToken = default)
+        {
+            List<T> dataCopy;
+
+            lock (Data)
+            {
+                dataCopy = new List<T>(Data);
+            }
+
+            if (dataCopy.Count == 0)
+            {
+                UnityEngine.Debug.LogWarningFormat("[{0} - UniTask] Data count is 0 may not properly convert to json. " +
+                    "Type: {1}",
+                    nameof(Database<T>),
+                    typeof(T)
+                );
+            }
+
+            return await UniTask.RunOnThreadPool(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var wrapper = new DatabaseWrapper<T>(dataCopy);
+                return JsonUtility.ToJson(wrapper, prettyPrint);
+            }, cancellationToken: cancellationToken);
+        }
+
+
+#endif
+
+
+
+
+
+#if UNITY_EDITOR
+
+
+        /// <summary>
+        /// Use this to search database elements in the editor.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public T SearchInEditor(int id)
+        {
+            int count = Data.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (Data[i].ID == id)
+                    return Data[i];
+
+            }
+
+            return null;
+        }
+
+
+
+        private void OnValidate()
+        {
+            Data.RemoveAll(item => item == null);
+
+            AssignUniqueIDs();
+
+            Data.Sort((a, b) => a.ID.CompareTo(b.ID));
+
+            EditorUtility.SetDirty(this);
+            SetDatabaseDirty();
+        }
+
+
+
+        private void AssignUniqueIDs()
+        {
+            HashSet<int> usedIDs = new HashSet<int>();
+
+            for (int i = 0; i < Data.Count; i++)
+            {
+                var item = Data[i];
+                if (item.ID < 0 || usedIDs.Contains(item.ID))
+                {
+                    int newID = (Data.Count > 0) ? Data.Max(item => item.ID) + 1 : 0;
+                    if (item is IRewritableItem rewritable)
+                    {
+                        rewritable.OverwriteID(newID);
+                    }
+                }
+
+                usedIDs.Add(item.ID);
+            }
+        }
+
+
+#endif
+
+
+    }
+
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Krolti.DatabaseSO",
+    "rootNamespace": "Krolti.DatabaseSO",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "2.5.10",
+            "define": "UNITASK"
+        },
+        {
+            "name": "com.neuecc.unirx",
+            "expression": "7.1.0",
+            "define": "UNIRX"
+        }
+    ],
+    "noEngineReferences": false
+}
