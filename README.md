@@ -196,7 +196,7 @@ private void Awake()
 ```
 
 
-## Install package from Git URL (UPM)
+## Install package
 
 > Window → Package Manager → + → Add package from Git URL...  
 > Paste:
