@@ -196,6 +196,13 @@ private void Awake()
 ```
 
 
+## Install package from Git URL (UPM)
+
+Paste this into unity
+
+```
+https://github.com/krolti/com.krolti.databaseso.git
+```
 
 
 ## Contribution
