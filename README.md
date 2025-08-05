@@ -30,7 +30,7 @@ It maintains editor-friendly workflows while offering quick search operations, s
 
 > **Note:** Examples in package are optional
 
-- You can use template 
+- You can use template to create your own database
 
 Right click in Project tab >
 
