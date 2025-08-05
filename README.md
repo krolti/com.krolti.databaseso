@@ -56,7 +56,7 @@ namespace Your.Namespace
             this.color = color;
         }
         
-		// Method to fix database item
+	// Method to fix database item
         public override bool TryFix()
         {
             if(color != null)
