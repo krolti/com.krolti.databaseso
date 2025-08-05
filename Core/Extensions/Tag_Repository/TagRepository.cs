@@ -108,6 +108,8 @@ namespace Krolti.DatabaseSO
 
         public bool ContainsTag(string itemTag)
         {
+            if (!IsInit) Initialize();
+
             return _tagToItem.ContainsKey(itemTag);
         }
 

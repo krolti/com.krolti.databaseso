@@ -21,7 +21,7 @@ namespace Krolti.DatabaseSO
         }
 
 
-        public static void CheckSerializableAttribute<T>()
+        public static void CheckSerializableAttribute<T>() where T : class, IDatabaseItem
         {
             if (!IsSerializable<T>())
             {
@@ -31,7 +31,7 @@ namespace Krolti.DatabaseSO
             }
         }
 
-        public static bool IsSerializable<T>() => IsSerializable(typeof(T));
-        public static bool IsSerializable(Type type) => type.IsDefined(typeof(SerializableAttribute), false);
+        private static bool IsSerializable<T>() => IsSerializable(typeof(T));
+        private static bool IsSerializable(Type type) => type.IsDefined(typeof(SerializableAttribute), false);
     }
 }

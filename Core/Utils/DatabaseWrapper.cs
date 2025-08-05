@@ -9,7 +9,7 @@ namespace Krolti.DatabaseSO
     /// </summary>
     /// <typeparam name="U">The type of items stored in the database wrapper.</typeparam>
     [Serializable]
-    public class DatabaseWrapper<U>
+    public class DatabaseWrapper<U> where U : class, IDatabaseItem
     {
         public List<U> Items;
         public DatabaseWrapper(List<U> data) => Items = data;

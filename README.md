@@ -121,4 +121,7 @@ public class RespondData : TaggedData
 }
 ```
 
-That's it.
+
+That’s it!  
+If you found this useful, feel free to star the repo and contribute.  
+For issues, feedback, or suggestions — [open an issue](https://github.com/krolti/krolti-com.krolti.databaseso/issues).
