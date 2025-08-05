@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Krolti.DatabaseSO.Examples
 {
-    [CreateAssetMenu(fileName = "Color Database", menuName = "DatabaseSO/Examples/Color Database")]
+    [CreateAssetMenu(fileName = "Color Database", menuName = "Database SO/Examples/Color Database")]
     internal class ColorDatabase : Database<ColorData>
     {
 

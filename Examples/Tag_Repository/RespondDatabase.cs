@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Krolti.DatabaseSO.Examples
 {
-    [CreateAssetMenu(fileName = "Respond Database", menuName = "DatabaseSO/Examples/Respond Database")]
+    [CreateAssetMenu(fileName = "Respond Database", menuName = "Database SO/Examples/Respond Database")]
     public class RespondDatabase : TagRepository<RespondData>
     {
 
