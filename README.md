@@ -204,6 +204,11 @@ Paste this into unity
 https://github.com/krolti/com.krolti.databaseso.git
 ```
 
+Or Install via manifest.json in "dependencies": {}
+
+```
+"com.krolti.database-so": "https://github.com/krolti/com.krolti.databaseso.git"
+```
 
 ## Contribution
 
