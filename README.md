@@ -200,6 +200,12 @@ private void Awake()
 }
 ```
 
+## Thread Safety
+
+
+>Although not all of this code is thread-safe, some of it is. It functions well when used on a single thread (such as Unity's main loop), but if you use it on multiple threads, you'll need to manage >synchronization yourself to prevent problems.
+
+
 
 ## Install package
 
@@ -215,6 +221,8 @@ Or Install via manifest.json in "dependencies": {}
 ```
 "com.krolti.database-so": "https://github.com/krolti/com.krolti.databaseso.git"
 ```
+
+
 
 ## Contribution
 
