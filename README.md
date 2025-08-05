@@ -28,9 +28,36 @@ It maintains editor-friendly workflows while offering quick search operations, s
 
 ## Getting Started
 
-**Examples in package are optional**
+> **Note:** Examples in package are optional
 
-- Simple Color Database
+- You can use template 
+
+Right click in Project tab >
+
+```
+Create/Database SO/Database Script
+```
+
+- It will automatically create a simple empty database implementation:
+
+```C#
+using UnityEngine;
+using Krolti.DatabaseSO;
+
+[CreateAssetMenu(fileName = "ClassName", menuName = "Database/ClassName")]
+public class ClassName : Database<ClassNameData>
+{
+
+}
+[System.Serializable]
+public class ClassNameData : DatabaseItem
+{
+
+}
+```
+
+
+- Let's create Simple Color Database
 
 ```C#
 using UnityEngine;
