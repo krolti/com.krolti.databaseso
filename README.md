@@ -14,6 +14,7 @@ It maintains editor-friendly workflows while offering quick search operations, s
 
 
 ##### Lightweight, performant
+ - Works with Mono and IL2CPP compilers
  - Binary Search implementation enables millions of operations on large indexed datasets
  - Efficient memory management via appropriate ScriptableObject implementation
 
