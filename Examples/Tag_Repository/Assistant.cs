@@ -5,6 +5,11 @@ namespace Krolti.DatabaseSO.Examples
     public class Assistant : MonoBehaviour
     {
         [SerializeField] private TagRepository<RespondData> respondData;
+
+        // or with direct acess
+        // [SerializeField] private RespondDatabase respondData;
+        
+        
         [SerializeField] private string input;
         [SerializeField] private string tryInput;
 

@@ -15,8 +15,14 @@ namespace Krolti.DatabaseSO.Examples
                 return;
             }
 
-            ColorData founditem = colorDatabase.Search(searchID);
-            founditem.DataTag = "Modified tag!";
+            if(colorDatabase.TrySearch(searchID, out ColorData data))
+            {
+                data.DataTag = "Modified tag!";
+            }
+            else
+            {
+                return;
+            }
 
 
             var elements = colorDatabase

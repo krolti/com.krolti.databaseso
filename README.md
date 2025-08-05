@@ -26,7 +26,7 @@ It maintains editor-friendly workflows while offering quick search operations, s
  - Virtual methods allow custom validation logic
 
 
-# Examples
+## Getting Started
 
 **Examples in package are optional**
 
@@ -79,6 +79,29 @@ To begin with creating Databases you can create a simple database.
 Note that class that inherits Database<> should have [CreateAssetMenu] attribute, and T type should include [System.Serializable]
 
 
+### Usage
+
+
+You can search items in the database:
+
+```C#
+// ...
+ColorData founditem = colorDatabase.Search(searchID);
+// ...
+```
+
+Or with safe method:
+
+```C#
+if(colorDatabase.TrySearch(searchID, out ColorData data))
+{
+    data.DataTag = "Modified tag!";
+}
+```
+
+
+### Unitask / Async
+
 Also you can write async JSON saving with Task/UniTask
 
 ```C#
@@ -99,7 +122,7 @@ public async void StartExport()
 ```
 
 
-### Tag repository
+## Tag repository
 
 If you want to have access your database with tags there's a solution in Core folder:
 
@@ -122,6 +145,33 @@ public class RespondData : TaggedData
 ```
 
 
-That’s it!  
-If you found this useful, feel free to star the repo and contribute.  
-For issues, feedback, or suggestions — [open an issue](https://github.com/krolti/krolti-com.krolti.databaseso/issues).
+### Tag Repository Usage
+
+```C#
+[SerializeField] private TagRepository<RespondData> respondData;
+
+// or with direct acess
+// [SerializeField] private RespondDatabase respondData;
+
+[SerializeField] private string input;
+[SerializeField] private string tryInput;
+
+private void Awake()
+{
+    string respond = respondData.GetByTag(input).GetRespond();
+    Debug.Log($"Assistant's respond: {respond}");
+
+    if(respondData.TryGetValue(tryInput, out var data))
+    {
+        Debug.Log($"Assistant's second respond, successfully: {data.GetRespond()}");
+    }
+}
+```
+
+
+
+
+## Contribution
+
+If you find this library useful, please consider starring the repository and contributing improvements!
+For issues, suggestions, or feedback, [open an issue here](https://github.com/krolti/krolti-com.krolti.databaseso/issues).
