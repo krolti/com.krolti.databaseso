@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNIRX
+using UniRx;
+#endif
+
 namespace Krolti.DatabaseSO
 {
     /// <summary>
@@ -20,10 +24,28 @@ namespace Krolti.DatabaseSO
         [SerializeField] private uint tagMaxLength = 0;
 
         private Dictionary<string, T> _tagToItem;
-        
+
         private uint MaxLengthComparer => tagMaxLength != 0 ? tagMaxLength : MaxTagLength;
 
         public bool IsRepositoryInit { get; private set; } = false;
+
+#if UNIRX
+
+        private Subject<Unit> _onRepositoryInit = new Subject<Unit>();
+        private Subject<Unit> _onRepositoryDirty = new Subject<Unit>();
+
+
+        /// <summary>
+        /// Observable that triggers when the database finishes initialization.
+        /// </summary>
+        public IObservable<Unit> OnRepositoryInit => _onRepositoryInit;
+
+
+        /// <summary>
+        /// Observable that triggers when the database is marked as dirty.
+        /// </summary>
+        public IObservable<Unit> OnRepositoryDirty => _onRepositoryDirty;
+#endif
 
 
         protected override void OnEnable()
@@ -32,7 +54,18 @@ namespace Krolti.DatabaseSO
             AttributeUtility.CheckDatabaseTypes<T>();
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
 
+#if UNIRX
+            _onRepositoryInit.Dispose();
+            _onRepositoryDirty.Dispose();
+
+            _onRepositoryInit = null;
+            _onRepositoryDirty = null;
+#endif
+        }
 
         protected internal override void Initialize()
         {
@@ -65,14 +98,14 @@ namespace Krolti.DatabaseSO
                 if (safeMode)
                 {
                     UnityEngine.Debug.LogWarningFormat(StringLengthException.InvalidLengthMessage,
-                        nameof(TagRepository<T>), typeof(T), itemTag.Length, MaxTagLength
+                        nameof(TagRepository<T>), typeof(T), itemTag.Length.ToString(), MaxTagLength.ToString()
                     );
                     return null;
                 }
                 else
                 {
-                    throw new StringLengthException(nameof(TagRepository<T>), typeof(T), 
-                        itemTag.Length, MaxTagLength);
+                    throw new StringLengthException(nameof(TagRepository<T>), typeof(T),
+                        itemTag.Length.ToString(), MaxTagLength.ToString());
                 }
 
             }
@@ -108,7 +141,7 @@ namespace Krolti.DatabaseSO
 
         public bool ContainsTag(string itemTag)
         {
-            if (!IsInit) Initialize();
+            if (!IsInit || !IsRepositoryInit || _tagToItem == null) Initialize();
 
             return _tagToItem.ContainsKey(itemTag);
         }
@@ -132,9 +165,9 @@ namespace Krolti.DatabaseSO
                     UnityEngine.Debug.LogErrorFormat("[{0}] Found duplicates in the tag repository. " +
                         "Tag: {1}. Repository type: {2}. Found id: {3}",
                         nameof(TagRepository<T>),
-                        item.ItemTag,
+                        item.ItemTag.ToString(),
                         typeof(T),
-                        item.ID
+                        item.ID.ToString()
                         );
                 }
 
@@ -149,7 +182,7 @@ namespace Krolti.DatabaseSO
                 if (item.ItemTag.Length > MaxLengthComparer)
                 {
                     throw new StringLengthException(nameof(TagRepository<T>), typeof(T),
-                        item.ItemTag.Length, MaxTagLength);
+                        item.ItemTag.Length.ToString(), MaxTagLength.ToString());
                 }
 
 
@@ -158,12 +191,19 @@ namespace Krolti.DatabaseSO
 
             IsRepositoryInit = true;
 
+#if UNIRX
+            _onRepositoryInit.OnNext(Unit.Default);
+#endif
         }
 
         public override void SetDatabaseDirty()
         {
             base.SetDatabaseDirty();
             IsRepositoryInit = false;
+
+#if UNIRX
+            _onRepositoryDirty.OnNext(Unit.Default);
+#endif
         }
 
     }
@@ -181,7 +221,7 @@ namespace Krolti.DatabaseSO
             "will be much harder to get and {0} will overuse memory. " +
             "Current max length: {3} Repository type: {1}";
 
-        public StringLengthException(params object[] args) 
+        public StringLengthException(params object[] args)
             : base(string.Format(InvalidLengthMessage, args)) { }
     }
 

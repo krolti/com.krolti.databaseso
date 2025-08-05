@@ -9,6 +9,6 @@ namespace Krolti.DatabaseSO
         /// <para>Called if IsValid == false on IDatabaseItem.</para>
         /// </summary>
         /// <returns></returns>
-        public bool TryFix();
+        bool TryFix();
     }
 }

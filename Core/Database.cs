@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 #if UNIRX
@@ -17,6 +17,8 @@ using UniRx;
 #if UNITASK
 
 using Cysharp.Threading.Tasks;
+using System.Text;
+
 
 #endif
 
@@ -41,13 +43,27 @@ namespace Krolti.DatabaseSO
         [Tooltip("The underlying list that stores all database items")]
         [SerializeField] protected List<T> Data = new List<T>();
 
+        private readonly object _initLock = new();
+        private readonly object _searchLock = new();
+
+
         public bool IsInit { get; private set; } = false;
         public int Count => Data.Count;
 
 
-        public IReadOnlyList<T> GetAll() => new ReadOnlyCollection<T>(Data);
+        public IReadOnlyList<T> GetAll()
+        {
+            if (!IsInit) Initialize();
 
-        public DatabaseQuery<T> Query() => new DatabaseQuery<T>(this);
+            return new ReadOnlyCollection<T>(Data);
+        }
+
+        public DatabaseQuery<T> Query()
+        {
+            if (!IsInit) Initialize();
+
+            return new DatabaseQuery<T>(this);
+        }
 
 
 
@@ -78,71 +94,93 @@ namespace Krolti.DatabaseSO
         }
 
 
+
         protected internal virtual void Initialize()
         {
             if (IsInit) return;
 
-            if (!IsSortedByID())
-            {
-                Data.Sort();
-            }
-            HashSet<int> uniqueIDs = new();
 
-            foreach (var data in Data)
-            {
-                if (!uniqueIDs.Add(data.ID))
-                {
-                    UnityEngine.Debug.LogErrorFormat("[{0}] Non unique element found " +
-                        "in database. Type: {1}, ID: {2}",
-                        nameof(Database<T>),
-                        typeof(T),
-                        data.ID
-                        );
-                }
-                if (!data.IsValid)
-                {
-                    UnityEngine.Debug.LogWarningFormat("[{0}] Invalid element found " +
-                        "in database. Type: {1}, ID: {2}.",
-                        nameof(Database<T>),
-                        typeof(T),
-                        data.ID
-                        );
+            //
+            // Be aware that this code is not fully thread safe.
+            // If you're calling this from other threads consider
+            // to exclude unity objects in IFixable and IsValid logic.
+            //
 
-                    if (data is IFixable fixable)
+            lock (_initLock)
+            {
+                bool shouldBeReassigned = false;
+
+                HashSet<int> uniqueIDs = new();
+
+                for (int i = 0; i < Count; i++)
+                {
+                    var data = Data[i];
+
+                    if (!uniqueIDs.Add(data.ID))
                     {
-                        if (fixable.TryFix())
-                        {
-                            UnityEngine.Debug.LogFormat("[{0}] Fixed element " +
-                                "in database. Type: {1}, ID: {2}.",
-                                nameof(Database<T>),
-                                typeof(T),
-                                data.ID
+                        UnityEngine.Debug.LogErrorFormat("[{0}] Non unique element found " +
+                            "in database. Type: {1}, ID: {2}",
+                            nameof(Database<T>),
+                            typeof(T),
+                            data.ID.ToString()
+                            );
+                        shouldBeReassigned = true;
+                    }
+                    if (!data.IsValid)
+                    {
+                        UnityEngine.Debug.LogWarningFormat("[{0}] Invalid element found " +
+                            "in database. Type: {1}, ID: {2}.",
+                            nameof(Database<T>),
+                            typeof(T),
+                            data.ID.ToString()
                             );
 
+                        if (data is IFixable fixable)
+                        {
+                            if (fixable.TryFix())
+                            {
+                                UnityEngine.Debug.LogFormat("[{0}] Fixed element " +
+                                    "in database. Type: {1}, ID: {2}.",
+                                    nameof(Database<T>),
+                                    typeof(T),
+                                    data.ID.ToString()
+                                );
+
+                            }
+                            else
+                            {
+                                UnityEngine.Debug.LogWarningFormat("[{0}] Database element corrupted " +
+                                    "in database! Type: {1}, ID: {2}.",
+                                    nameof(Database<T>),
+                                    typeof(T),
+                                    data.ID.ToString()
+                                );
+                            }
                         }
                         else
                         {
-                            UnityEngine.Debug.LogWarningFormat("[{0}] Database element corrupted " +
-                                "in database! Type: {1}, ID: {2}.",
-                                nameof(Database<T>),
-                                typeof(T),
-                                data.ID
+                            UnityEngine.Debug.LogWarningFormat("[{0}] Database element is not {1} " +
+                                    "in database. Use it to fix corrupted database items. Type: {2}, ID: {3}.",
+                                    nameof(Database<T>),
+                                    typeof(IFixable),
+                                    typeof(T),
+                                    data.ID.ToString()
                             );
                         }
                     }
-                    else
-                    {
-                        UnityEngine.Debug.LogWarningFormat("[{0}] Database element is not {1} " +
-                                "in database. Use it to fix corrupted database items. Type: {2}, ID: {3}.",
-                                nameof(Database<T>),
-                                typeof(IFixable),
-                                typeof(T),
-                                data.ID
-                        );
-                    }
                 }
-            }
 
+                if (shouldBeReassigned)
+                {
+                    AssignUniqueIDs();
+                }
+
+                if (!IsSortedByID())
+                {
+                    Data.Sort();
+                }
+
+            }
             IsInit = true;
 
 #if UNIRX
@@ -216,21 +254,24 @@ namespace Krolti.DatabaseSO
 
             if (!IsInit) Initialize();
 
-            T item = BinarySearch(id);
-
-            if (item != null)
+            lock (_searchLock)
             {
-                return item;
+                T item;
+                item = BinarySearch(id);
+                if (item != null)
+                {
+                    return item;
+                }
+                if (warningIfNotFound)
+                {
+                    UnityEngine.Debug.LogWarningFormat("[{0}] Element was not found, target: Type: {1} ID: {2}",
+                        nameof(Database<T>),
+                        typeof(T),
+                        id.ToString()
+                        );
+                }
             }
 
-            if (warningIfNotFound)
-            {
-                UnityEngine.Debug.LogWarningFormat("[{0}] Element was not found, target: Type: {1} ID: {2}",
-                    nameof(Database<T>),
-                    typeof(T),
-                    id
-                    );
-            }
             return null;
         }
 
@@ -246,24 +287,23 @@ namespace Krolti.DatabaseSO
         {
             value = null;
 
-            if (id < 0
-                || Data == null
-                || Count == 0)
-            {
+            if (id < 0)
                 return false;
-            }
-
 
             if (!IsInit) Initialize();
 
-            T item = BinarySearch(id);
-
-            if (item != null)
+            lock (_searchLock)
             {
-                value = item;
-                return true;
-            }
 
+                T item = BinarySearch(id);
+
+                if (item != null)
+                {
+                    value = item;
+                    return true;
+                }
+
+            }
 
             return false;
         }
@@ -328,8 +368,35 @@ namespace Krolti.DatabaseSO
 
 
 
+        protected virtual void AssignUniqueIDs()
+        {
+            for (int i = 0; i < Data.Count; i++)
+            {
+                if (Data[i].ID != i)
+                {
+                    if (Data[i] is IRewritableItem rewritable)
+                    {
+                        rewritable.OverwriteID(i);
+                    }
+                    else
+                    {
+                        StringBuilder exsb = new();
+                        exsb.Append($"Item is not rewritable: {typeof(T)}.");
+                        exsb.Append(" Consider making Item rewritable or database have");
+                        exsb.Append(" custom unique check logic");
+
+                        throw new System.ArgumentException(exsb.ToString());
+                    }
+                }
+            }
+        }
+
+
+
         public async Task<string> ConvertToJsonAsync(bool prettyPrint = false, CancellationToken cancellationToken = default)
         {
+            if (!IsInit) Initialize();
+
             List<T> dataCopy;
 
             lock (Data)
@@ -359,6 +426,8 @@ namespace Krolti.DatabaseSO
 
         public string ConvertToJson(bool prettyPrint = false)
         {
+            if (!IsInit) Initialize();
+
             return JsonConverter.ConvertToJson(Data, prettyPrint);
         }
 
@@ -379,6 +448,8 @@ namespace Krolti.DatabaseSO
 
         public async UniTask<string> ConvertToJsonUniTaskAsync(bool prettyPrint = false, CancellationToken cancellationToken = default)
         {
+            if (!IsInit) Initialize();
+
             List<T> dataCopy;
 
             lock (Data)
@@ -445,27 +516,6 @@ namespace Krolti.DatabaseSO
             SetDatabaseDirty();
         }
 
-
-
-        private void AssignUniqueIDs()
-        {
-            HashSet<int> usedIDs = new HashSet<int>();
-
-            for (int i = 0; i < Data.Count; i++)
-            {
-                var item = Data[i];
-                if (item.ID < 0 || usedIDs.Contains(item.ID))
-                {
-                    int newID = (Data.Count > 0) ? Data.Max(item => item.ID) + 1 : 0;
-                    if (item is IRewritableItem rewritable)
-                    {
-                        rewritable.OverwriteID(newID);
-                    }
-                }
-
-                usedIDs.Add(item.ID);
-            }
-        }
 
 
 #endif

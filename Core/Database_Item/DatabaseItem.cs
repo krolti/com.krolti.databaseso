@@ -13,6 +13,8 @@ namespace Krolti.DatabaseSO
         [Tooltip("Unique id of the database element")]
         [SerializeField] private int id;
 
+        private readonly object _idLock = new();
+
         public int ID => id;
 
         public virtual bool IsValid => true;
@@ -26,7 +28,10 @@ namespace Krolti.DatabaseSO
                 throw new System.IndexOutOfRangeException(nameof(id));
             }
 
-            this.id = id;
+            lock (_idLock)
+            {
+                this.id = id;
+            }
         }
     }
 

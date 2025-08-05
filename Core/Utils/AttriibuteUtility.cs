@@ -6,7 +6,7 @@ namespace Krolti.DatabaseSO
     /// <summary>
     /// Class to check generics for containing an attribute.
     /// </summary>
-    public static class AttributeUtility
+    internal static class AttributeUtility
     {
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Krolti.DatabaseSO
         }
 
 
-        public static void CheckSerializableAttribute<T>() where T : class, IDatabaseItem
+        private static void CheckSerializableAttribute<T>() where T : class, IDatabaseItem
         {
             if (!IsSerializable<T>())
             {

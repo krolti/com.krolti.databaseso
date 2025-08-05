@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Krolti.DatabaseSO
 {
-    public static class JsonConverter
+    internal static class JsonConverter
     {
-        public const int MAX_SAFE_SIZE_DESKTOP = 50 * 1024 * 1024;
-        public const int MAX_SAFE_SIZE_MOBILE = 5 * 1024 * 1024;
+        private const int MAX_SAFE_SIZE_DESKTOP = 50 * 1024 * 1024;
+        private const int MAX_SAFE_SIZE_MOBILE = 5 * 1024 * 1024;
 
         public static string ConvertToJson<T>(List<T> Data, bool prettyPrint) where T : class, IDatabaseItem
         {
