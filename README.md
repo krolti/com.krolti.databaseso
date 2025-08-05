@@ -28,6 +28,9 @@ It maintains editor-friendly workflows while offering quick search operations, s
 
 # Examples
 
+**Examples in package are optional**
+
+- Simple Color Database
 
 ```C#
 using UnityEngine;
@@ -74,3 +77,48 @@ namespace Your.Namespace
 To begin with creating Databases you can create a simple database.
 
 Note that class that inherits Database<> should have [CreateAssetMenu] attribute, and T type should include [System.Serializable]
+
+
+Also you can write async JSON saving with Task/UniTask
+
+```C#
+
+public async UniTaskVoid StartExportUniTask()
+{
+	// ...
+	string json = await database.ConvertToJsonUniTaskAsync(true, _cts.Token);
+	// ...
+}
+
+public async void StartExport()
+{
+	// ...
+	string json = await database.ConvertToJsonAsync(true, _cts.Token);
+	// ...
+}
+```
+
+
+### Tag repository
+
+If you want to have access your database with tags there's a solution in Core folder:
+
+
+```C#
+[CreateAssetMenu(fileName = "Respond Database", menuName = "DatabaseSO/Examples/Respond Database")]
+public class RespondDatabase : TagRepository<RespondData>
+{
+
+}
+[System.Serializable]
+
+public class RespondData : TaggedData
+{
+    // Take input as a database tag
+    [SerializeField] private string output;
+
+    public string GetRespond() => output;
+}
+```
+
+That's it.
