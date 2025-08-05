@@ -135,16 +135,16 @@ Also you can write async JSON saving with Task/UniTask
 
 public async UniTaskVoid StartExportUniTask()
 {
-	// ...
-	string json = await database.ConvertToJsonUniTaskAsync(true, _cts.Token);
-	// ...
+    // ...
+    string json = await database.ConvertToJsonUniTaskAsync(true, _cts.Token);
+    // ...
 }
 
 public async void StartExport()
 {
-	// ...
-	string json = await database.ConvertToJsonAsync(true, _cts.Token);
-	// ...
+    // ...
+    string json = await database.ConvertToJsonAsync(true, _cts.Token);
+    // ...
 }
 ```
 
@@ -198,7 +198,8 @@ private void Awake()
 
 ## Install package from Git URL (UPM)
 
-Paste this into unity
+> Window → Package Manager → + → Add package from Git URL...  
+> Paste:
 
 ```
 https://github.com/krolti/com.krolti.databaseso.git
