@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Text;
 
 
 #if UNIRX
@@ -17,7 +18,6 @@ using UniRx;
 #if UNITASK
 
 using Cysharp.Threading.Tasks;
-using System.Text;
 
 
 #endif
@@ -47,7 +47,7 @@ namespace Krolti.DatabaseSO
         private readonly object _searchLock = new();
 
 
-        public bool IsInit { get; private set; } = false;
+        [field: NonSerialized] public bool IsInit { get; private set; } = false;
         public int Count => Data.Count;
 
 
@@ -368,12 +368,14 @@ namespace Krolti.DatabaseSO
 
 
 
-        protected virtual void AssignUniqueIDs()
+        protected virtual bool AssignUniqueIDs()
         {
+            bool hadChanges = false;
             for (int i = 0; i < Data.Count; i++)
             {
                 if (Data[i].ID != i)
                 {
+                    hadChanges = true;
                     if (Data[i] is IRewritableItem rewritable)
                     {
                         rewritable.OverwriteID(i);
@@ -389,6 +391,8 @@ namespace Krolti.DatabaseSO
                     }
                 }
             }
+
+            return hadChanges;
         }
 
 
@@ -506,14 +510,24 @@ namespace Krolti.DatabaseSO
 
         private void OnValidate()
         {
-            Data.RemoveAll(item => item == null);
+            int removed = Data.RemoveAll(item => item == null);
+            bool sorted = false;
 
-            AssignUniqueIDs();
+            bool hadChanges = AssignUniqueIDs();
 
-            Data.Sort((a, b) => a.ID.CompareTo(b.ID));
+            if (!IsSortedByID())
+            {
+                Data.Sort((a, b) => a.ID.CompareTo(b.ID));
+                sorted = true;
+            }
 
-            EditorUtility.SetDirty(this);
-            SetDatabaseDirty();
+
+            if (removed > 0 || sorted || hadChanges)
+            {
+                EditorUtility.SetDirty(this);
+                SetDatabaseDirty();
+            }
+
         }
 
 
