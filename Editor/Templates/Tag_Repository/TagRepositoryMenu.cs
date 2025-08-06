@@ -7,18 +7,21 @@ namespace Krolti.DatabaseSO.Editor
 {
     public static class TagRepositoryMenu
     {
+        
         [MenuItem("Assets/Create/Database SO/Tag Repository Script", priority = -90)]
-
         public static void CreateDatabaseScript()
         {
+            var creator = ScriptableObject.CreateInstance<TagRepositoryScriptCreator>();
+
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
                 0,
-                ScriptableObject.CreateInstance<TagRepositoryScriptCreator>(),
+                creator,
                 "NewDatabase.cs",
-                null,
+                TemplateTools.GetScriptIcon(),
                 null
             );
         }
     }
 }
+
 #endif

@@ -15,5 +15,7 @@ namespace Krolti.DatabaseSO.Examples
         [SerializeField] private string output;
 
         public string GetRespond() => output;
+
+        public override bool IsValid => string.IsNullOrEmpty(output) == false;
     }
 }

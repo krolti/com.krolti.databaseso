@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using UnityEngine;
+
 
 #if UNIRX
 using UniRx;
@@ -23,7 +24,7 @@ namespace Krolti.DatabaseSO
         [Tooltip("Default length: 1000")]
         [SerializeField] private uint tagMaxLength = 0;
 
-        private Dictionary<string, T> _tagToItem;
+        private ConcurrentDictionary<string, T> _tagToItem;
 
         private uint MaxLengthComparer => tagMaxLength != 0 ? tagMaxLength : MaxTagLength;
 
@@ -111,7 +112,7 @@ namespace Krolti.DatabaseSO
             }
 
 
-            if (!IsRepositoryInit || _tagToItem == null) InitializeRepository();
+            if (!IsRepositoryInit || _tagToItem == null) Initialize();
 
 
             if (_tagToItem.TryGetValue(itemTag, out T value))
@@ -139,8 +140,14 @@ namespace Krolti.DatabaseSO
 
 
 
+
         public bool ContainsTag(string itemTag)
         {
+            if (string.IsNullOrEmpty(itemTag))
+            {
+                return false;
+            }
+
             if (!IsInit || !IsRepositoryInit || _tagToItem == null) Initialize();
 
             return _tagToItem.ContainsKey(itemTag);
@@ -148,10 +155,31 @@ namespace Krolti.DatabaseSO
 
 
 
+        /// <summary>
+        /// Same as contains tag but throws if the tag is empty
+        /// </summary>
+        /// <param name="itemTag"></param>
+        /// <returns></returns>
+        /// <exception cref="EmptyTagException"></exception>
+        public bool ContainsTagThrowIfEmpty(string itemTag)
+        {
+            if (string.IsNullOrEmpty(itemTag))
+            {
+                throw new EmptyTagException(nameof(TagRepository<T>), typeof(T));
+            }
+
+            return ContainsTag(itemTag);
+        }
+
+
+
         private void InitializeRepository()
         {
             if (_tagToItem == null)
-                _tagToItem = new();
+            {
+                _tagToItem = new ConcurrentDictionary<string, T>
+                    (Environment.ProcessorCount, Count);
+            }
 
 
             _tagToItem.Clear();

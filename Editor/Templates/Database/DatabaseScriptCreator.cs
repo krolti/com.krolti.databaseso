@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
+
 using System.IO;
-using UnityEditor;
+using UnityEngine;
 
 namespace Krolti.DatabaseSO.Editor
 {
@@ -8,7 +9,8 @@ namespace Krolti.DatabaseSO.Editor
     {
         public override void Action(int instanceId, string pathName, string resourceFile)
         {
-            string className = Path.GetFileNameWithoutExtension(pathName);
+            string className = TemplateTools.SanitizeClassName
+                (Path.GetFileNameWithoutExtension(pathName));
 
             string scriptText =
 $@"
@@ -28,10 +30,10 @@ public class {className}Data : DatabaseItem
 
 ";
 
-            File.WriteAllText(pathName, scriptText);
-
-            AssetDatabase.ImportAsset(pathName);
+            TemplateTools.WriteFile(pathName, scriptText, "DatabaseScriptCreator");
+            ScriptableObject.DestroyImmediate(this);
         }
     }
 }
+
 #endif

@@ -18,10 +18,7 @@ namespace Krolti.DatabaseSO
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogErrorFormat("[{0}] Failed to convert database to json. Type: {1}",
-                    nameof(Database<T>),
-                    typeof(T)
-                    );
+                DebugDB.Error<T>("Failed to convert database to json.");
                 UnityEngine.Debug.LogException(ex);
             }
             return string.Empty;
@@ -56,10 +53,7 @@ namespace Krolti.DatabaseSO
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogErrorFormat("[{0}] Failed to read json data. Type: {1}",
-                    nameof(Database<T>),
-                    typeof(T)
-                    );
+                DebugDB.Error<T>("Failed to read json data.");
                 UnityEngine.Debug.LogException(ex);
             }
         }

@@ -7,15 +7,17 @@ namespace Krolti.DatabaseSO.Editor
 {
     public static class DatabaseMenu
     {
-        [MenuItem("Assets/Create/Database SO/Database Script", priority = -100)]
 
+        [MenuItem("Assets/Create/Database SO/Database Script", priority = -100)]
         public static void CreateDatabaseScript()
         {
+            var creator = ScriptableObject.CreateInstance<DatabaseScriptCreator>();
+
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
                 0,
-                ScriptableObject.CreateInstance<DatabaseScriptCreator>(),
+                creator,
                 "NewDatabase.cs",
-                null,
+                TemplateTools.GetScriptIcon(),
                 null
             );
         }
