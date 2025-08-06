@@ -209,7 +209,7 @@ private void Awake()
 
 
 ## Install package
-
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 > Window → Package Manager → + → Add package from Git URL...  
 > Paste:
 
@@ -218,7 +218,6 @@ https://github.com/krolti/com.krolti.databaseso.git
 ```
 
 Or Install via manifest.json in "dependencies": {}
-
 ```
 "com.krolti.database-so": "https://github.com/krolti/com.krolti.databaseso.git"
 ```
