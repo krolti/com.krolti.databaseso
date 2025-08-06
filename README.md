@@ -204,7 +204,7 @@ private void Awake()
 ## Thread Safety
 
 
->Although not all of this code is thread-safe, some of it is. It functions well when used on a single thread (such as Unity's main loop), but if you use it on multiple threads, you'll need to manage >synchronization yourself to prevent problems.
+>Although not all of this code is thread-safe, some of it is. It functions well when used on a single thread (such as Unity's main loop), but if you use it on multiple threads, you'll need to manage synchronization yourself to prevent problems.
 
 
 
