@@ -4,8 +4,8 @@
   "displayName": "Database SO",
   "description": "A High-Performance ScriptableObject Database System for Unity",
   "unity": "2022.3",
-  "changelogUrl": "https://github.com/krolti/krolti-database-so/blob/main/Assets/Plugins/krolti-database-so/CHANGELOG.md",
-  "licensesUrl": "https://github.com/krolti/krolti-database-so/blob/main/LICENSE",
+  "changelogUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/LICENSE",
   "dependencies": {
  },
   "author": {
