@@ -5,42 +5,75 @@ namespace Krolti.DatabaseSO
     {
         Log,
         Warn,
-        Error,
-        Throw
+        Error
     }
-
 
 
     internal static class DebugDB
     {
-        public static void Log<T>(string message, T item = null) where T : class, IDatabaseItem
+        internal static void Log<T>(string message, T item = null) where T : class, IDatabaseItem
         {
-            Log<T>(message, LogLevel.Log, item);
+            CreateLog<T>(message, LogLevel.Log, item);
         }
 
-        public static void Warn<T>(string message, T item = null) where T : class, IDatabaseItem
+        internal static void LogFormat<T>(string message, params object[] args) where T : class, IDatabaseItem
         {
-            Log<T>(message, LogLevel.Warn, item);
-        }
-
-        public static void Error<T>(string message, T item = null) where T : class, IDatabaseItem
-        {
-            Log<T>(message, LogLevel.Error, item);
-        }
-
-        public static void Throw<T>(string message, T item = null) where T : class, IDatabaseItem
-        {
-            Log<T>(message, LogLevel.Throw, item);
+            CreateLog<T>(string.Format(message, args), LogLevel.Log);
         }
 
 
-        private static void Log<T>(string message, LogLevel logLevel, T item = null) where T : class, IDatabaseItem
+        internal static void Warn<T>(string message, T item = null) where T : class, IDatabaseItem
         {
-            string endMessage = item == null ? Format<T>(message) : FormatID<T>(message, item);
+            CreateLog<T>(message, LogLevel.Warn, item);
+        }
+
+        internal static void WarnFormat<T>(string message, params object[] args) where T : class, IDatabaseItem
+        {
+            CreateLog<T>(string.Format(message, args), LogLevel.Warn);
+        }
+
+
+        internal static void Error<T>(string message, T item = null) where T : class, IDatabaseItem
+        {
+            CreateLog<T>(message, LogLevel.Error, item);
+        }
+
+        internal static void ErrorFormat<T>(string message, params object[] args) where T : class, IDatabaseItem
+        {
+            CreateLog<T>(string.Format(message, args), LogLevel.Error);
+        }
+
+
+        internal static void Throw<T>(string message, T item = null) where T : class, IDatabaseItem
+        {
+            string endMessage = item == null ? message.Format<T>() : message.Format(item);
+
+            throw new DatabaseException(endMessage);
+        }
+
+
+        internal static System.Exception Exception<T>(string message, T item = null) where T : class, IDatabaseItem
+        {
+            string endMessage = item == null ? message.Format<T>() : message.Format(item);
+
+            return new DatabaseException(endMessage);
+        }
+
+
+        internal static System.Exception ExceptionFormat<T>(string message, params object[] args) where T : class, IDatabaseItem
+        {
+            string endMessage = string.Format(message, args).Format<T>();
+
+            return new DatabaseException(endMessage);
+        }
+
+
+        private static void CreateLog<T>(string message, LogLevel logLevel, T item = null) where T : class, IDatabaseItem
+        {
+            string endMessage = item == null ? message.Format<T>() : message.Format(item);
 
             LogBased(endMessage, logLevel);
         }
-
 
 
         private static void LogBased(string message, LogLevel logLevel)
@@ -55,37 +88,14 @@ namespace Krolti.DatabaseSO
 
                 case LogLevel.Error:
                     UnityEngine.Debug.LogError(message); break;
-
-                case LogLevel.Throw:
-                    throw new DatabaseException(message);
             }
         }
 
-
-
-        private static string Format<T>(string message) where T : class, IDatabaseItem
-        {
-            string formatted = string.Format("[{0}<{2}>] {1} Type: {2}",
-                nameof(Database<T>),
-                message,
-                typeof(T)
-                );
-
-            return formatted;
-        }
-
-        private static string FormatID<T>(string message, T item) where T : class, IDatabaseItem
-        {
-            return Format<T>($"{message}, ID: {item.ID}");
-        }
     }
-
 
 
     internal class DatabaseException : System.Exception
     {
         public DatabaseException(string message) : base(message) { }
     }
-
-
 }

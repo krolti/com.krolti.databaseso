@@ -117,9 +117,7 @@ namespace Krolti.DatabaseSO
 
                     if (!uniqueIDs.Add(data.ID))
                     {
-                        DebugDB.Throw("Non unique element found in database.", data);
-
-                        shouldBeReassigned = true;
+                        throw DebugDB.Exception<T>("Non unique element found in database.", data);
                     }
 
                     ValidateDatabaseItem(data);
@@ -170,7 +168,7 @@ namespace Krolti.DatabaseSO
             }
             else
             {
-                DebugDB.Throw("Database element is not IFixable in database. " +
+                throw DebugDB.Exception<T>("Database element is not IFixable in database. " +
                     "Use it to fix corrupted database items.", data);
             }
 
@@ -373,7 +371,7 @@ namespace Krolti.DatabaseSO
                 }
                 else
                 {
-                    DebugDB.Throw<T>("Item is not rewritable. Consider making Item rewritable or database have custom unique check logic");
+                    throw DebugDB.Exception<T>("Item is not rewritable. Consider making Item rewritable or database have custom unique check logic");
                 }
 
             }

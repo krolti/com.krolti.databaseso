@@ -17,7 +17,7 @@ namespace Krolti.DatabaseSO
         {
             if (string.IsNullOrEmpty(itemTag))
             {
-                throw new EmptyTagException(nameof(TaggedData), typeof(TaggedData));
+                throw DebugDB.Exception("Requested null or empty string", this);
             }
 
             lock (_overwriteLock)

@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using UnityEngine;
 
 
+
+
 #if UNIRX
 using UniRx;
 #endif
@@ -18,6 +20,14 @@ namespace Krolti.DatabaseSO
         where T : class, ITagData, IDatabaseItem
     {
         private const uint MaxTagLength = 1000;
+        /// <summary>
+        /// 0 - length. 1 - max length.
+        /// </summary>
+        private const string LengthExceptionMessage = "Requested item tag exceeded max length: (current length - '{0}'). " +
+            "Change the tagMaxLength if you are aware that the tag's hash code will be much harder to get " +
+            "and type will overuse memory. Current max length: {1}";
+
+        public const string EmptyTagMessage = "Requested null or empty tag in the tag repository";
 
         [Header("Leave on 0 to get default max length (1000)")]
         [Space(8)]
@@ -82,13 +92,12 @@ namespace Krolti.DatabaseSO
             {
                 if (safeMode)
                 {
-                    UnityEngine.Debug.LogWarningFormat(EmptyTagException.EmptyTagExceptionMessage,
-                        nameof(TagRepository<T>), typeof(T));
+                    DebugDB.Error<T>(EmptyTagMessage);
                     return null;
                 }
                 else
                 {
-                    throw new EmptyTagException(nameof(TagRepository<T>), typeof(T));
+                    throw DebugDB.Exception<T>(EmptyTagMessage);
                 }
 
             }
@@ -98,15 +107,13 @@ namespace Krolti.DatabaseSO
             {
                 if (safeMode)
                 {
-                    UnityEngine.Debug.LogWarningFormat(StringLengthException.InvalidLengthMessage,
-                        nameof(TagRepository<T>), typeof(T), itemTag.Length.ToString(), MaxTagLength.ToString()
-                    );
+                    DebugDB.WarnFormat<T>(LengthExceptionMessage, 
+                        itemTag.Length.ToString(), MaxLengthComparer.ToString());
                     return null;
                 }
                 else
                 {
-                    throw new StringLengthException(nameof(TagRepository<T>), typeof(T),
-                        itemTag.Length.ToString(), MaxTagLength.ToString());
+                    throw DebugDB.ExceptionFormat<T>(LengthExceptionMessage, itemTag.Length, MaxLengthComparer);
                 }
 
             }
@@ -165,7 +172,7 @@ namespace Krolti.DatabaseSO
         {
             if (string.IsNullOrEmpty(itemTag))
             {
-                throw new EmptyTagException(nameof(TagRepository<T>), typeof(T));
+                throw DebugDB.Exception<T>(EmptyTagMessage);
             }
 
             return ContainsTag(itemTag);
@@ -190,27 +197,20 @@ namespace Krolti.DatabaseSO
 
                 if (_tagToItem.ContainsKey(item.ItemTag))
                 {
-                    UnityEngine.Debug.LogErrorFormat("[{0}] Found duplicates in the tag repository. " +
-                        "Tag: {1}. Repository type: {2}. Found id: {3}",
-                        nameof(TagRepository<T>),
-                        item.ItemTag.ToString(),
-                        typeof(T),
-                        item.ID.ToString()
-                        );
+                    throw DebugDB.Exception<T>($"Found duplicates in the tag repository. Tag: {item.ItemTag}");
                 }
 
 
                 if (string.IsNullOrEmpty(item.ItemTag))
                 {
-                    throw new EmptyTagException(nameof(TagRepository<T>), typeof(T));
-
+                    throw DebugDB.Exception<T>(EmptyTagMessage, item);
                 }
 
 
                 if (item.ItemTag.Length > MaxLengthComparer)
                 {
-                    throw new StringLengthException(nameof(TagRepository<T>), typeof(T),
-                        item.ItemTag.Length.ToString(), MaxTagLength.ToString());
+                    throw DebugDB.ExceptionFormat<T>(LengthExceptionMessage, 
+                        item.ItemTag.Length, MaxLengthComparer);
                 }
 
 
@@ -234,36 +234,7 @@ namespace Krolti.DatabaseSO
 #endif
         }
 
-    }
 
-    internal class StringLengthException : Exception
-    {
-        /// <summary>
-        /// <para>0 - database name.</para>
-        /// <para>1 - type.</para>
-        /// <para>2 - length.</para>
-        /// <para>3 - max length.</para>
-        /// </summary>
-        internal const string InvalidLengthMessage = "[{0}] Requested item tag exceeded " +
-            "max length: (current - '{2}'). Change the tagMaxLength if you are aware that the tag's hash code " +
-            "will be much harder to get and {0} will overuse memory. " +
-            "Current max length: {3} Repository type: {1}";
-
-        public StringLengthException(params object[] args)
-            : base(string.Format(InvalidLengthMessage, args)) { }
-    }
-
-    internal class EmptyTagException : Exception
-    {
-        /// <summary>
-        /// <para>0 - database type.</para>
-        /// <para>1 - type.</para>
-        /// </summary>
-        internal const string EmptyTagExceptionMessage = "[{0}] Requested item tag " +
-            "is null or empty string. Repository type: {1}";
-
-        public EmptyTagException(params object[] args)
-            : base(string.Format(EmptyTagExceptionMessage, args)) { }
     }
 
 }
