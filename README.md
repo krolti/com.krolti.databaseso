@@ -230,3 +230,5 @@ https://github.com/krolti/com.krolti.databaseso/releases/tag/1.0.0
 
 If you find this library useful, please consider starring the repository and contributing improvements!
 For issues, suggestions, or feedback, [open an issue here](https://github.com/krolti/krolti-com.krolti.databaseso/issues).
+
+[Contributing Guide](https://github.com/krolti/com.krolti.databaseso/blob/main/CONTRIBUTING.md)
