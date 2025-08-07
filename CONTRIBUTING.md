@@ -43,7 +43,7 @@ git checkout -b feature/your-feature-name
 5. Make your changes, following the coding standards below.
 6. Commit with a clear message.
 7. Push your branch to your fork.
-8. Open a pull request against the `main` branch with a detailed description.
+8. Open a pull request against the `develop` branch with a detailed description.
 
 ---
 
