@@ -214,12 +214,12 @@ private void Awake()
 > Paste:
 
 ```
-https://github.com/krolti/com.krolti.databaseso.git#v1.0.0
+https://github.com/krolti/com.krolti.databaseso.git#v1.1.0
 ```
 
 Or Install via manifest.json in "dependencies": {}
 ```
-"com.krolti.database-so": "https://github.com/krolti/com.krolti.databaseso.git#v1.0.0"
+"com.krolti.database-so": "https://github.com/krolti/com.krolti.databaseso.git#v1.1.0"
 ```
 
 Also you can install it into Assets/Plugins folder via .unitypackage

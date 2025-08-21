@@ -22,5 +22,5 @@ Key Features:
  - Generic implementation works with any data type
  - Virtual methods allow custom validation logic
 
-Version: 1.0.0
+Version: 1.1.0
 Author: Krolti
