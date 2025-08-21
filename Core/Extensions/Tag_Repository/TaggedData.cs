@@ -6,7 +6,7 @@ namespace Krolti.DatabaseSO
     {
         [SerializeField] private string itemTag;
 
-        private readonly object _overwriteLock = new();
+        private readonly object _overwriteLock = new object();
 
         public string ItemTag => itemTag;
 

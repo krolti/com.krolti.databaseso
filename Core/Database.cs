@@ -48,11 +48,20 @@ namespace Krolti.DatabaseSO
         public int Count => Data.Count;
 
 
+        public IReadOnlyList<T> SafeData
+        {
+            get
+            {
+                if (!IsInit) Initialize();
+
+                return new ReadOnlyCollection<T>(Data);
+            }
+        }
+
+
         public IReadOnlyList<T> GetAll()
         {
-            if (!IsInit) Initialize();
-
-            return new ReadOnlyCollection<T>(Data);
+            return SafeData;
         }
 
         public DatabaseQuery<T> Query()
@@ -90,13 +99,17 @@ namespace Krolti.DatabaseSO
             AttributeUtility.CheckDatabaseTypes<T>();
         }
 
+        protected virtual void OnBeforeInitialize() { }
+
+        protected virtual void OnAfterInitialize() { }
+
 
 
         protected internal virtual void Initialize()
         {
             if (IsInit) return;
 
-
+            OnBeforeInitialize();
             //
             // Be aware that this code is not fully thread safe.
             // If you're calling this from other threads consider
@@ -106,6 +119,7 @@ namespace Krolti.DatabaseSO
             lock (_initLock)
             {
                 if (IsInit) return;
+
 
                 bool shouldBeReassigned = false;
 
@@ -133,13 +147,13 @@ namespace Krolti.DatabaseSO
                 {
                     Data.Sort();
                 }
-
             }
             IsInit = true;
 
 #if UNIRX
             _onInitialized.OnNext(Unit.Default);
 #endif
+            OnAfterInitialize();
         }
 
 
@@ -168,8 +182,8 @@ namespace Krolti.DatabaseSO
             }
             else
             {
-                throw DebugDB.Exception<T>("Database element is not IFixable in database. " +
-                    "Use it to fix corrupted database items.", data);
+                throw DebugDB.Exception<T>("Database element is not IFixable in database. Use it to fix corrupted database items.",
+                    data);
             }
 
             return false;
@@ -379,11 +393,16 @@ namespace Krolti.DatabaseSO
             return hadChanges;
         }
 
+        protected virtual void OnBeforeJsonExport() { }
+
+        protected virtual void OnAfterJsonExport() { }
 
 
-        public async Task<string> ConvertToJsonAsync(bool prettyPrint = false, CancellationToken cancellationToken = default)
+        public async Task<string> ConvertToJsonAsync(bool prettyPrint = false, CancellationToken cancellationToken = default, bool warnEmpty = true)
         {
             if (!IsInit) Initialize();
+
+            OnBeforeJsonExport();
 
             List<T> dataCopy;
 
@@ -392,27 +411,42 @@ namespace Krolti.DatabaseSO
                 dataCopy = new List<T>(Data);
             }
 
-            if (dataCopy.Count == 0)
+            if (dataCopy.Count == 0 && warnEmpty)
             {
-                DebugDB.Warn<T>("Data count is 0 may not properly convert to json.");
+                DebugDB.Warn<T>("Data count is 0 may not properly convert to json. If it's okay set warnEmpty as false");
             }
 
 
-            return await Task.Run(() =>
+            string json = await Task.Run(() =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var wrapper = new DatabaseWrapper<T>(dataCopy);
                 return JsonUtility.ToJson(wrapper, prettyPrint);
             }, cancellationToken);
+
+            OnAfterJsonExport();
+
+            return json;
         }
 
 
 
-        public string ConvertToJson(bool prettyPrint = false)
+        public string ConvertToJson(bool prettyPrint = false, bool warnEmpty = true)
         {
             if (!IsInit) Initialize();
 
-            return JsonConverter.ConvertToJson(Data, prettyPrint);
+            OnBeforeJsonExport();
+
+            if(Data.Count == 0 && warnEmpty)
+            {
+                DebugDB.Warn<T>("Data count is 0 may not properly convert to json. If it's okay set warnEmpty as false");
+            }
+
+            string json = JsonConverter.ConvertToJson(Data, prettyPrint);
+
+            OnAfterJsonExport();
+
+            return json;
         }
 
 
@@ -425,14 +459,14 @@ namespace Krolti.DatabaseSO
 
 
 
-
-
 #if UNITASK
 
 
         public async UniTask<string> ConvertToJsonUniTaskAsync(bool prettyPrint = false, CancellationToken cancellationToken = default)
         {
             if (!IsInit) Initialize();
+
+            OnBeforeJsonExport();
 
             List<T> dataCopy;
 
@@ -446,12 +480,16 @@ namespace Krolti.DatabaseSO
                 DebugDB.Warn<T>("Data count is 0 may not properly convert to json.");
             }
 
-            return await UniTask.RunOnThreadPool(() =>
+            string json = await UniTask.RunOnThreadPool(() =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var wrapper = new DatabaseWrapper<T>(dataCopy);
                 return JsonUtility.ToJson(wrapper, prettyPrint);
             }, cancellationToken: cancellationToken);
+
+            OnAfterJsonExport();
+
+            return json;
         }
 
 
