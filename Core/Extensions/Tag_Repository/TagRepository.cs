@@ -4,7 +4,6 @@ using UnityEngine;
 
 
 
-
 #if UNIRX
 using UniRx;
 #endif
@@ -78,9 +77,10 @@ namespace Krolti.DatabaseSO
 #endif
         }
 
-        protected internal override void Initialize()
+
+
+        protected override void OnAfterInitialize()
         {
-            base.Initialize();
             InitializeRepository();
         }
 
@@ -107,7 +107,7 @@ namespace Krolti.DatabaseSO
             {
                 if (safeMode)
                 {
-                    DebugDB.WarnFormat<T>(LengthExceptionMessage, 
+                    DebugDB.WarnFormat<T>(LengthExceptionMessage,
                         itemTag.Length.ToString(), MaxLengthComparer.ToString());
                     return null;
                 }
@@ -209,7 +209,7 @@ namespace Krolti.DatabaseSO
 
                 if (item.ItemTag.Length > MaxLengthComparer)
                 {
-                    throw DebugDB.ExceptionFormat<T>(LengthExceptionMessage, 
+                    throw DebugDB.ExceptionFormat<T>(LengthExceptionMessage,
                         item.ItemTag.Length, MaxLengthComparer);
                 }
 
@@ -234,6 +234,43 @@ namespace Krolti.DatabaseSO
 #endif
         }
 
+
+#if UNITY_EDITOR
+
+
+        public T GetByTagInEditor(string itemTag)
+        {
+            if (string.IsNullOrEmpty(itemTag))
+                DebugDB.Error<T>(EmptyTagMessage);
+
+
+            for (int i = 0; i < Data.Count; i++)
+            {
+                if (Data[i].ItemTag == itemTag)
+                {
+                    return Data[i];
+                }
+            }
+
+            return null;
+        }
+
+
+
+        public bool TryGetValueEditor(string itemTag, out T value)
+        {
+            value = GetByTagInEditor(itemTag);
+
+            if (value != null)
+            {
+                return true;
+            }
+
+            value = null;
+            return false;
+        }
+
+#endif
 
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "com.krolti.database-so",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Database SO",
   "description": "A High-Performance ScriptableObject Database System for Unity",
   "unity": "2022.3",
