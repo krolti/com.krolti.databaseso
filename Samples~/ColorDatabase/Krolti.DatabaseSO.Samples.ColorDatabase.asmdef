@@ -1,0 +1,16 @@
+{
+    "name": "Krolti.DatabaseSO.Samples.ColorDatabase",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5a0cb315d3176324db0f0fad90736a02"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
