@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f132f1e73d0754fae87c6e570d06c1, type: 3}
+  m_Name: Color Database
+  m_EditorClassIdentifier: 
+  comment: Database with auto filling colors (Context menu).
+  Data:
+  - id: 0
+    color: {r: 0.76670325, g: 0.20018843, b: 0.9253924, a: 1}
+    <ColorTag>k__BackingField: Some Color Tag
+  - id: 1
+    color: {r: 0.0216285, g: 0.8531951, b: 0.24139336, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 2
+    color: {r: 0.93337107, g: 0.17852117, b: 0.9909785, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 3
+    color: {r: 0.8382399, g: 0.40705866, b: 0.5841628, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 4
+    color: {r: 0.4932328, g: 0.6197154, b: 0.99891496, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 5
+    color: {r: 0.22450104, g: 0.63824874, b: 0.3363084, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 6
+    color: {r: 0.55753416, g: 0.65628916, b: 0.878693, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 7
+    color: {r: 0.31302825, g: 0.041913036, b: 0.35371032, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 8
+    color: {r: 0.28215972, g: 0.8035295, b: 0.016891958, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  - id: 9
+    color: {r: 0.25366345, g: 0.35795656, b: 0.33093062, a: 1}
+    <ColorTag>k__BackingField: New Color Tag
+  fillElementCount: 100

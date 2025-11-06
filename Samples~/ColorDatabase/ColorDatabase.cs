@@ -23,8 +23,8 @@ namespace Krolti.DatabaseSO.Examples
                     1f
                 );
 
-                var newColor = new ColorData(randomColor);
-                Data.Add(newColor);
+                var newData = new ColorData(randomColor);
+                Data.Add(newData);
             }
         }
 #endif
@@ -35,7 +35,7 @@ namespace Krolti.DatabaseSO.Examples
     {
         [SerializeField] private Color color;
 
-        [field: SerializeField] public string DataTag { get; set; }
+        [field: SerializeField] public string ColorTag { get; set; }
         public Color Color => color;
         /// <summary>
         /// Just transparensy check.

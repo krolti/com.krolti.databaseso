@@ -46,11 +46,14 @@ namespace Krolti.DatabaseSO
             return this;
         }
 
+
+        public T[] ToArray() => _currentSet.ToArray();
         public List<T> ToList() => _currentSet.ToList();
         public T First() => _currentSet.First();
         public T FirstOrDefault() => _currentSet.FirstOrDefault();
         public int Count() => _currentSet.Count();
         public bool Any() => _currentSet.Any();
         public bool Any(Func<T, bool> predicate) => _currentSet.Any(predicate);
+        public bool All(Func<T, bool> predicate) => _currentSet.All(predicate);
     }
 }

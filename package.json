@@ -1,16 +1,32 @@
 {
-  "name": "com.krolti.database-so",
-  "version": "1.1.0",
-  "displayName": "Database SO",
-  "description": "A High-Performance ScriptableObject Database System for Unity",
-  "unity": "2022.3",
-  "changelogUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/LICENSE",
-  "dependencies": {
- },
-  "author": {
-    "name": "Krolti",
-    "url": "https://krolti.itch.io/"
-  }
+    "name": "com.krolti.database-so",
+    "version": "2.0.1",
+    "displayName": "Database SO",
+    "description": "A High-Performance ScriptableObject Database System for Unity",
+    "unity": "2022.3",
+    "changelogUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/CHANGELOG.md",
+    "licensesUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/LICENSE",
+    "dependencies": {
+    },
+    "author": {
+        "name": "Krolti",
+        "url": "https://krolti.itch.io/"
+    },
+    "samples": [
+        {
+            "displayName": "Color Database",
+            "description": "Simplest database implementation and feature overview.",
+            "path": "Samples~/ColorDatabase"
+        },
+        {
+            "displayName": "Assistant",
+            "description": "Tag repository usage overview.",
+            "path": "Samples~/Assistant"
+        },
+        {
+            "displayName": "Benchmarks",
+            "description": "Database operations benchmarking.",
+            "path": "Samples~/Benchmarks"
+        }
+    ]
 }
-

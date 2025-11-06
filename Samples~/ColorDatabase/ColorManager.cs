@@ -17,7 +17,7 @@ namespace Krolti.DatabaseSO.Examples
 
             if(colorDatabase.TrySearch(searchID, out ColorData data))
             {
-                data.DataTag = "Modified tag!";
+                data.ColorTag = "Some Color Tag";
             }
             else
             {
@@ -27,12 +27,12 @@ namespace Krolti.DatabaseSO.Examples
 
             var elements = colorDatabase
                 .Query()
-                .Where(item => item.DataTag != "Modified tag!")
+                .Where(item => item.ColorTag != "Some Color Tag")
                 .ToList();
 
             foreach (var item in elements)
             {
-                item.DataTag = "Query modified tag!";
+                item.ColorTag = "New Color Tag";
             }
 
             Debug.Log("Modified Items!");
