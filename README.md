@@ -224,8 +224,8 @@ Or Install via manifest.json in "dependencies": {}
 
 Also you can install it into Assets/Plugins folder via .unitypackage
 
-https://github.com/krolti/com.krolti.databaseso/releases/tag/v1.0.0
 
+![Latest Release](https://github.com/krolti/com.krolti.databaseso/releases/tag/v2.0.0)
 ## Contribution
 
 If you find this library useful, please consider starring the repository and contributing improvements!
