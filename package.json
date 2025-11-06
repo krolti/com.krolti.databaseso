@@ -1,12 +1,15 @@
 {
     "name": "com.krolti.database-so",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "displayName": "Database SO",
     "description": "A High-Performance ScriptableObject Database System for Unity",
     "unity": "2022.3",
     "changelogUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/CHANGELOG.md",
     "licensesUrl": "https://github.com/krolti/com.krolti.databaseso/blob/main/LICENSE",
     "dependencies": {
+    },
+    "_upm": {
+        "changelog": "Features\n- Added ToArray(), All() to query"
     },
     "author": {
         "name": "Krolti",

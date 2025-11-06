@@ -1,3 +1,5 @@
+# Changelog
+
 ## [1.0.0] - 2025.08.06
 ### First Release
 
@@ -11,3 +13,13 @@
 - Added GetByTagInEditor and TryGetValueEditor methods in tag repository
 - Added on before and on after json export
 - Debug improvements
+
+## [2.0.0] - 2025.11.05
+
+Improvements
+- Moved all examples into Samples~ folder
+
+## [2.0.1] - 2025.11.06
+
+Features
+- Added ToArray(), All() to query
