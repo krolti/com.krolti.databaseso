@@ -92,7 +92,7 @@ namespace Your.Namespace
             this.color = color;
         }
         
-	// Method to fix database item
+        // Method to fix database item
         public override bool TryFix()
         {
             if(color != null)
@@ -226,7 +226,7 @@ Or Install via manifest.json in "dependencies": {}
 
 Also you can install it into Assets/Plugins folder via .unitypackage
 
-![Latest Release](https://github.com/krolti/com.krolti.databaseso/releases/tag/v2.0.0)
+[Latest Release](https://github.com/krolti/com.krolti.databaseso/releases/tag/v2.0.1)
 
 ## Contribution
 
