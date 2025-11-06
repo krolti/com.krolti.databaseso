@@ -208,7 +208,7 @@ private void Awake()
 
 
 
-## Install package
+## Install package (UPM)
 ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 > Window → Package Manager → + → Add package from Git URL...  
 > Paste:
@@ -222,10 +222,12 @@ Or Install via manifest.json in "dependencies": {}
 "com.krolti.database-so": "https://github.com/krolti/com.krolti.databaseso.git"
 ```
 
+## Install manually
+
 Also you can install it into Assets/Plugins folder via .unitypackage
 
-
 ![Latest Release](https://github.com/krolti/com.krolti.databaseso/releases/tag/v2.0.0)
+
 ## Contribution
 
 If you find this library useful, please consider starring the repository and contributing improvements!
