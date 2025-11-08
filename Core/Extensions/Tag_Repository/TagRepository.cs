@@ -86,6 +86,16 @@ namespace Krolti.DatabaseSO
 
 
 
+        public T this[string tag]
+        {
+            get
+            {
+                return GetByTag(tag, false);
+            }
+        }
+
+
+
         public T GetByTag(string itemTag, bool safeMode = true)
         {
             if (string.IsNullOrEmpty(itemTag))

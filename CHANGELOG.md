@@ -23,3 +23,7 @@ Improvements
 
 Features
 - Added ToArray(), All() to query
+
+## [2.1.0] - 2025.11.08
+
+- Added indexers to the Database and TagRepository

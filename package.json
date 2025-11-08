@@ -1,6 +1,6 @@
 {
     "name": "com.krolti.database-so",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "displayName": "Database SO",
     "description": "A High-Performance ScriptableObject Database System for Unity",
     "unity": "2022.3",
@@ -9,7 +9,7 @@
     "dependencies": {
     },
     "_upm": {
-        "changelog": "Features\n- Added ToArray(), All() to query"
+        "changelog": "###Added\n- Added indexers to the Database and TagRepository"
     },
     "author": {
         "name": "Krolti",

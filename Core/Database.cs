@@ -235,6 +235,20 @@ namespace Krolti.DatabaseSO
 
 
 
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= Data.Count)
+                {
+                    throw new IndexOutOfRangeException(nameof(index));
+                }
+                return Search(index, false);
+            }
+        }
+
+
+
         /// <summary>
         /// Quick and memory efficient searching method.
         /// 
